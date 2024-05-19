@@ -38,7 +38,7 @@ entry_id = 1
 response = requests.get(f'http://127.0.0.1:5000/audit-log-entries/{entry_id}')
 print(response.json())
 
-Receiving Data
+##Receiving Data
 When you make requests to the endpoints, the microservice responds with JSON data. Here are examples of the responses:
 
 {
