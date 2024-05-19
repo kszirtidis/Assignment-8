@@ -1,35 +1,38 @@
 import requests
 
-BASE_URL = 'http://127.0.0.1:5000/audit-log-entries'
+BASE_URL = 'http://127.0.0.1:5000'
 
-def create_audit_log_entry(user_id, action, details):
-    payload = {
-        'user_id': user_id,
-        'action': action,
-        'details': details
+def test_create_audit_log_entry():
+    endpoint = '/audit-log-entries'
+    data = {
+        'user_id': 'user123',
+        'action': 'created',
+        'details': 'Created a new resource'
     }
-    response = requests.post(BASE_URL, json=payload)
-    return response.json()
+    response = requests.post(BASE_URL + endpoint, json=data)
+    print("Create Audit Log Entry Response:", response.json())
 
-def get_audit_log_entries():
-    response = requests.get(BASE_URL)
-    return response.json()
+def test_get_all_audit_log_entries():
+    endpoint = '/audit-log-entries'
+    response = requests.get(BASE_URL + endpoint)
+    print("Get All Audit Log Entries Response:", response.json())
 
-def get_audit_log_entry(entry_id):
-    response = requests.get(f'{BASE_URL}/{entry_id}')
-    return response.json()
+def test_get_specific_audit_log_entry(entry_id):
+    endpoint = f'/audit-log-entries/{entry_id}'
+    response = requests.get(BASE_URL + endpoint)
+    print(f"Get Specific Audit Log Entry (ID={entry_id}) Response:", response.json())
 
 if __name__ == '__main__':
-    print("Creating an audit log entry...")
-    entry = create_audit_log_entry('user123', 'created', 'Created a new resource')
-    print("Response:", entry)
+    # Test creating an audit log entry
+    print("Testing creating an audit log entry...")
+    test_create_audit_log_entry()
 
-    print("\nFetching all audit log entries...")
-    entries = get_audit_log_entries()
-    print("Response:", entries)
+    # Test getting all audit log entries
+    print("\nTesting getting all audit log entries...")
+    test_get_all_audit_log_entries()
 
-    print("\nFetching a specific audit log entry by ID...")
-    if entries:
-        entry_id = entries[0]['id']
-        specific_entry = get_audit_log_entry(entry_id)
-        print("Response:", specific_entry)
+    # Test getting a specific audit log entry
+    entry_id = 1  # Replace with the ID of the audit log entry you want to retrieve
+    print(f"\nTesting getting a specific audit log entry (ID={entry_id})...")
+    test_get_specific_audit_log_entry(entry_id)
+
