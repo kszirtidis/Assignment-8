@@ -9,7 +9,6 @@ To create, read, or get specific audit log entries from the microservice, use th
 
 #### Create an Audit Log Entry
 
-**Endpoint:** `POST /audit-log-entries`
 
 **Request Body:**
 ```json
