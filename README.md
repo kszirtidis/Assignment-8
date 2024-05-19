@@ -3,9 +3,7 @@ The instrucitons are included for how to request and recive the data using a RES
 pip install Flask is required. 
 
 
-## Communication Contract
-
-### Requesting Data 
+## Requesting Data 
 
 To create, read, or get specific audit log entries from the microservice, use the following endpoints:
 
