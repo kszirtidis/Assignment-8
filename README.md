@@ -96,10 +96,11 @@ For which teammate did you implement “Microservice A”?
 Blaine
 
 What is the current status of the microservice? Hopefully, it’s done!
+
 It is complete and worked during testing.
 
-
 If the microservice isn’t done, which parts aren’t done and when will they be done?
+
 N/A
 
 How is your teammate going to access your microservice? Should they get your code from GitHub? Should they run your code locally? Is your microservice hosted somewhere? Etc.
