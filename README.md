@@ -5,8 +5,11 @@ The instrucitons are included for how to request and recive the data using a RES
 ### Prerequisites
 
 Python 3.x
+
 Flask
+
 Flask SQLAlchemy
+
 MySQL server
 
 ### Installation
