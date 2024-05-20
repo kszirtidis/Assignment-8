@@ -32,7 +32,7 @@ if __name__ == '__main__':
     test_get_all_audit_log_entries()
 
     # Test getting a specific audit log entry
-    entry_id = 1  # Replace with the ID of the audit log entry you want to retrieve
+    entry_id = 4  # Replace with the ID of the audit log entry you want to retrieve
     print(f"\nTesting getting a specific audit log entry (ID={entry_id})...")
     test_get_specific_audit_log_entry(entry_id)
 
