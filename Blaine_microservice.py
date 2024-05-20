@@ -1,69 +1,74 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///audit_log.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Load configuration from config.py or environment variable
-#app.config.from_pyfile('config.py') 
-
+app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 class AuditLogEntry(db.Model):
+    __tablename__ = 'audit_log_entries'
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.String(50), nullable=False)
-    action = db.Column(db.String(100), nullable=False)
-    details = db.Column(db.Text, nullable=True)
+    user_id = db.Column(db.String(255))
+    action = db.Column(db.String(255))
+    details = db.Column(db.String(255))
+    timestamp = db.Column(db.DateTime, default=db.func.now())
 
-    def __repr__(self):
-        return f'<AuditLogEntry {self.id}>'
+@app.route('/')
+def home():
+    return 'Welcome to Blaine Microservice'
 
-@app.route('/audit-log-entries', methods=['POST'])
+@app.route('/audit-log-entries')
+def view_audit_log_entries():
+    audit_log_entries = AuditLogEntry.query.all()
+    entries = []
+    for entry in audit_log_entries:
+        entries.append({
+            'id': entry.id,
+            'user_id': entry.user_id,
+            'action': entry.action,
+            'details': entry.details,
+            'timestamp': entry.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    return jsonify(entries)
+
+@app.route('/audit-log-entry', methods=['POST'])
 def create_audit_log_entry():
     data = request.get_json()
     new_entry = AuditLogEntry(
         user_id=data['user_id'],
         action=data['action'],
-        details=data.get('details')
+        details=data['details']
     )
     db.session.add(new_entry)
     db.session.commit()
-    return jsonify({"message": "Audit log entry created successfully", "entry": {
-        "id": new_entry.id,
-        "timestamp": new_entry.timestamp,
-        "user_id": new_entry.user_id,
-        "action": new_entry.action,
-        "details": new_entry.details
-    }}), 201
+    return jsonify({'message': 'Audit log entry created'}), 201
 
-@app.route('/audit-log-entries', methods=['GET'])
-def get_audit_log_entries():
-    entries = AuditLogEntry.query.all()
-    return jsonify([{
-        "id": entry.id,
-        "timestamp": entry.timestamp,
-        "user_id": entry.user_id,
-        "action": entry.action,
-        "details": entry.details
-    } for entry in entries])
+@app.route('/audit-log-entry/<int:id>', methods=['PUT'])
+def update_audit_log_entry(id):
+    data = request.get_json()
+    entry = AuditLogEntry.query.get(id)
+    if not entry:
+        return jsonify({'message': 'Entry not found'}), 404
 
-@app.route('/audit-log-entries/<int:id>', methods=['GET'])
+    entry.user_id = data.get('user_id', entry.user_id)
+    entry.action = data.get('action', entry.action)
+    entry.details = data.get('details', entry.details)
+    db.session.commit()
+    return jsonify({'message': 'Audit log entry updated'})
+
+@app.route('/audit-log-entry/<int:id>', methods=['GET'])
 def get_audit_log_entry(id):
-    entry = AuditLogEntry.query.get_or_404(id)
+    entry = AuditLogEntry.query.get(id)
+    if not entry:
+        return jsonify({'message': 'Entry not found'}), 404
+
     return jsonify({
-        "id": entry.id,
-        "timestamp": entry.timestamp,
-        "user_id": entry.user_id,
-        "action": entry.action,
-        "details": entry.details
+        'id': entry.id,
+        'user_id': entry.user_id,
+        'action': entry.action,
+        'details': entry.details,
+        'timestamp': entry.timestamp.strftime('%Y-%m-%d %H:%M:%S')
     })
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
-
-

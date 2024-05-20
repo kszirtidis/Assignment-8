@@ -1,38 +1,60 @@
 import requests
+import json
 
-BASE_URL = 'http://127.0.0.1:5000'
+BASE_URL = "http://127.0.0.1:5000"
 
-def test_create_audit_log_entry():
-    endpoint = '/audit-log-entries'
+def create_audit_log_entry(user_id, action, details):
     data = {
-        'user_id': 'user123',
-        'action': 'created',
-        'details': 'Created a new resource'
+        "user_id": user_id,
+        "action": action,
+        "details": details
     }
-    response = requests.post(BASE_URL + endpoint, json=data)
-    print("Create Audit Log Entry Response:", response.json())
+    response = requests.post(f"{BASE_URL}/audit-log-entry", json=data)
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.text}")
+    return response.json()
 
-def test_get_all_audit_log_entries():
-    endpoint = '/audit-log-entries'
-    response = requests.get(BASE_URL + endpoint)
-    print("Get All Audit Log Entries Response:", response.json())
+def get_audit_log_entries():
+    response = requests.get(f"{BASE_URL}/audit-log-entries")
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.text}")
+    return response.json()
 
-def test_get_specific_audit_log_entry(entry_id):
-    endpoint = f'/audit-log-entries/{entry_id}'
-    response = requests.get(BASE_URL + endpoint)
-    print(f"Get Specific Audit Log Entry (ID={entry_id}) Response:", response.json())
+def get_audit_log_entry_by_id(entry_id):
+    response = requests.get(f"{BASE_URL}/audit-log-entry/{entry_id}")
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.text}")
+    return response.json()
 
-if __name__ == '__main__':
-    # Test creating an audit log entry
-    print("Testing creating an audit log entry...")
-    test_create_audit_log_entry()
+def update_audit_log_entry(entry_id, user_id, action, details):
+    data = {
+        "user_id": user_id,
+        "action": action,
+        "details": details
+    }
+    response = requests.put(f"{BASE_URL}/audit-log-entry/{entry_id}", json=data)
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.text}")
+    return response.json()
 
-    # Test getting all audit log entries
-    print("\nTesting getting all audit log entries...")
-    test_get_all_audit_log_entries()
+# Create a new audit log entry
+print("Creating audit log entry...")
+create_response = create_audit_log_entry("user123", "CREATE", "Created a new resource")
+print(create_response)
 
-    # Test getting a specific audit log entry
-    entry_id = 4  # Replace with the ID of the audit log entry you want to retrieve
-    print(f"\nTesting getting a specific audit log entry (ID={entry_id})...")
-    test_get_specific_audit_log_entry(entry_id)
+# Get all audit log entries
+print("Fetching all audit log entries...")
+entries = get_audit_log_entries()
+print(entries)
 
+# Get audit log entry by ID
+print("Fetching audit log entry by ID...")
+if entries:
+    first_entry_id = entries[0]['id']
+    entry = get_audit_log_entry_by_id(first_entry_id)
+    print(entry)
+
+    # Update the audit log entry
+    print("Updating audit log entry...")
+    update_response = update_audit_log_entry(first_entry_id, "user123", "UPDATE", "Updated the resource")
+    print(update_response)
