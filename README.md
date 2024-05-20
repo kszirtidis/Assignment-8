@@ -1,94 +1,80 @@
 README for Microservice A
 The instrucitons are included for how to request and recive the data using a RESTful API.
-pip install Flask is required. 
+## Setup Instructions
 
+### Prerequisites
 
-## Requesting Data 
+- Python 3.10+
+- MySQL server
+- `pip` (Python package installer)
 
-To create, read, or get specific audit log entries from the microservice, use the following endpoints:
+### Installation
 
-#### Create an Audit Log Entry
+1. Clone the repository:
 
+    ```bash
+    git clone <your-repo-url>
+    cd <your-repo-directory>
+    ```
 
-**Request Body:**
-```json
-{
-    "user_id": "user123",
-    "action": "created",
-    "details": "Created a new resource"
-}
-    }
-}
+2. Install the required Python packages:
 
-import requests
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-BASE_URL = 'http://127.0.0.1:5000/audit-log-entries'
-payload = {
-    'user_id': 'user123',
-    'action': 'created',
-    'details': 'Created a new resource'
-}
-response = requests.post(BASE_URL, json=payload)
-print(response.json())
+3. Configure your MySQL database connection in the `config.py` file:
 
+    ```python
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://<username>:<password>@<host>:<port>/<database_name>'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    ```
 
-import requests
+### Initialize the Database
 
-BASE_URL = 'http://127.0.0.1:5000/audit-log-entries'
-response = requests.get(BASE_URL)
-print(response.json())
+Before running your application, initialize the MySQL database. In the same directory as `Blaine_microservice.py`, create an `initialize_db.py` file with the following content:
 
+```python
+from Blaine_microservice import app, db
 
-import requests
-
-entry_id = 1
-response = requests.get(f'http://127.0.0.1:5000/audit-log-entries/{entry_id}')
-print(response.json())
-
+with app.app_context():
+    db.create_all()
 ```
-## Receiving Data
-When you make requests to the endpoints, the microservice responds with JSON data. Here are examples of the responses:
-```json
-{
-    "message": "Audit log entry created successfully",
-    "entry": {
-        "id": 1,
-        "user_id": "user123",
-        "action": "created",
-        "details": "Created a new resource"
+or use an exisiting database and fill in the correct parts of the config.py file.
+
+Here is an example of using the requests
+
+```python
+import requests
+
+BASE_URL = "http://127.0.0.1:5000"
+
+def create_audit_log_entry(user_id, action, details):
+    data = {
+        "user_id": user_id,
+        "action": action,
+        "details": details
     }
-}
+    response = requests.post(f"{BASE_URL}/audit-log-entry", json=data)
+    return response.json()
 
+def get_audit_log_entries():
+    response = requests.get(f"{BASE_URL}/audit-log-entries")
+    return response.json()
 
-[
-    {
-        "id": 1,
-        "user_id": "user123",
-        "action": "created",
-        "details": "Created a new resource",
-        "timestamp": "2024-05-19T15:20:30.123456"
+def get_audit_log_entry_by_id(entry_id):
+    response = requests.get(f"{BASE_URL}/audit-log-entry/{entry_id}")
+    return response.json()
+
+def update_audit_log_entry(entry_id, user_id, action, details):
+    data = {
+        "user_id": user_id,
+        "action": action,
+        "details": details
     }
-]
-
-{
-    "id": 1,
-    "user_id": "user123",
-    "action": "created",
-    "details": "Created a new resource",
-    "timestamp": "2024-05-19T15:20:30.123456"
-}
-
-
+    response = requests.put(f"{BASE_URL}/audit-log-entry/{entry_id}", json=data)
+    return response.json()
 ```
-
-How to Run the Microservice and Test Program
-Edit config file with correct database login and password.
-Start the Flask server:
-python Blaine_microservice.py
-
-test file
-python test_client.py
-
 
 ## Communication Contract
 
