@@ -3,11 +3,14 @@ import json
 
 BASE_URL = "http://127.0.0.1:5000"
 
-def create_audit_log_entry(user_id, action, details):
+def create_audit_log_entry(action, employee_id, record_type, record_id, before_state, after_state):
     data = {
-        "user_id": user_id,
         "action": action,
-        "details": details
+        "employee_id": employee_id,
+        "record_type": record_type,
+        "record_id": record_id,
+        "before_state": before_state,
+        "after_state": after_state
     }
     response = requests.post(f"{BASE_URL}/audit-log-entry", json=data)
     print(f"Status Code: {response.status_code}")
@@ -26,11 +29,14 @@ def get_audit_log_entry_by_id(entry_id):
     print(f"Response: {response.text}")
     return response.json()
 
-def update_audit_log_entry(entry_id, user_id, action, details):
+def update_audit_log_entry(entry_id, action, employee_id, record_type, record_id, before_state, after_state):
     data = {
-        "user_id": user_id,
         "action": action,
-        "details": details
+        "employee_id": employee_id,
+        "record_type": record_type,
+        "record_id": record_id,
+        "before_state": before_state,
+        "after_state": after_state
     }
     response = requests.put(f"{BASE_URL}/audit-log-entry/{entry_id}", json=data)
     print(f"Status Code: {response.status_code}")
@@ -39,7 +45,7 @@ def update_audit_log_entry(entry_id, user_id, action, details):
 
 # Create a new audit log entry
 print("Creating audit log entry...")
-create_response = create_audit_log_entry("user123", "CREATE", "Created a new resource")
+create_response = create_audit_log_entry("CREATE", 1, "RESOURCE", 123, "{}", "{}")
 print(create_response)
 
 # Get all audit log entries
@@ -56,5 +62,5 @@ if entries:
 
     # Update the audit log entry
     print("Updating audit log entry...")
-    update_response = update_audit_log_entry(first_entry_id, "user123", "UPDATE", "Updated the resource")
+    update_response = update_audit_log_entry(first_entry_id, "UPDATE", 1, "RESOURCE", 123, "{}", "{}")
     print(update_response)
