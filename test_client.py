@@ -56,7 +56,7 @@ print(entries)
 # Get audit log entry by ID
 print("Fetching audit log entry by ID...")
 if entries:
-    first_entry_id = entries[0]['id']
+    first_entry_id = entries[2]['id']
     entry = get_audit_log_entry_by_id(first_entry_id)
     print(entry)
 

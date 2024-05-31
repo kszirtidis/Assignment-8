@@ -50,7 +50,7 @@ def create_audit_log_entry():
     )
     db.session.add(new_entry)
     db.session.commit()
-    return jsonify({'message': 'Audit log entry created'}), 201
+    return jsonify({'message': 'Audit log entry created', 'id': new_entry.id}), 201
 
 @app.route('/audit-log-entry/<int:id>', methods=['PUT'])
 def update_audit_log_entry(id):
