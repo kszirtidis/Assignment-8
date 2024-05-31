@@ -4,9 +4,13 @@ The instrucitons are included for how to request and recive the data using a RES
 
 ### Prerequisites
 
-- Python 3.10+
-- MySQL server
-- `pip` (Python package installer)
+Python 3.x
+
+Flask
+
+Flask SQLAlchemy
+
+MySQL server
 
 ### Installation
 
@@ -26,7 +30,7 @@ The instrucitons are included for how to request and recive the data using a RES
 3. Configure your MySQL database connection in the `config.py` file:
 
     ```python
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://<username>:<password>@<host>:<port>/<database_name>'
+    SQLALCHEMY_DATABASE_URI = 'mysql://<username>:<password>@<host>:<port>/<database_name>'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ```
 
@@ -44,36 +48,39 @@ or use an exisiting database and fill in the correct parts of the config.py file
 
 Here is an example of using the requests
 
-```python
-import requests
+Creating Audit Log Entries
+Send a POST request to http://127.0.0.1:5000/audit-log-entry with JSON data containing the attributes of the audit log entry:
 
-BASE_URL = "http://127.0.0.1:5000"
+```json
+{
+  "action": "CREATE",
+  "employee_id": 123,
+  "record_type": "RESOURCE",
+  "record_id": 456,
+  "before_state": "{}",
+  "after_state": "{}"
+}
 
-def create_audit_log_entry(user_id, action, details):
-    data = {
-        "user_id": user_id,
-        "action": action,
-        "details": details
-    }
-    response = requests.post(f"{BASE_URL}/audit-log-entry", json=data)
-    return response.json()
 
-def get_audit_log_entries():
-    response = requests.get(f"{BASE_URL}/audit-log-entries")
-    return response.json()
+```
+Retrieving Audit Log Entries
+Send a GET request to http://127.0.0.1:5000/audit-log-entries to retrieve all audit log entries.
 
-def get_audit_log_entry_by_id(entry_id):
-    response = requests.get(f"{BASE_URL}/audit-log-entry/{entry_id}")
-    return response.json()
+Retrieving Audit Log Entry by ID
+Send a GET request to http://127.0.0.1:5000/audit-log-entry/<id> to retrieve a specific audit log entry by its ID.
 
-def update_audit_log_entry(entry_id, user_id, action, details):
-    data = {
-        "user_id": user_id,
-        "action": action,
-        "details": details
-    }
-    response = requests.put(f"{BASE_URL}/audit-log-entry/{entry_id}", json=data)
-    return response.json()
+Updating Audit Log Entries
+Send a PUT request to http://127.0.0.1:5000/audit-log-entry/<id> with JSON data containing the updated attributes of the audit log entry:
+
+```json
+{
+  "action": "UPDATE",
+  "employee_id": 123,
+  "record_type": "RESOURCE",
+  "record_id": 456,
+  "before_state": "{}",
+  "after_state": "{}"
+}
 ```
 
 ## Communication Contract
